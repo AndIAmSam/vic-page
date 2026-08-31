@@ -14,9 +14,9 @@ function App() {
     <>
       <Navbar />
       <Intro />
-      <Promise />
-      <Statement />
       <Approach />
+      <Statement />
+      <Promise />
       <Trust />
       <CTA />
       <Footer />

@@ -28,7 +28,7 @@ export default function Intro() {
             transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
             Victor<br />
-            Flores<span className="accent">.</span>
+            Flores
           </motion.h1>
 
           <motion.p
@@ -45,7 +45,7 @@ export default function Intro() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             Tu tranquilidad financiera no se deja al azar.{' '}
-            <strong style={{ color: 'var(--bg)', fontWeight: 600 }}>Se diseña.</strong>
+            <strong style={{ color: 'var(--bg)', fontWeight: 600 }}>Se construye estratégicamente.</strong>
           </motion.p>
 
           <motion.div

@@ -4,47 +4,47 @@ import { MessageCircle, X, Send, ArrowRight } from 'lucide-react';
 
 const faqTree = {
   welcome: {
-    bot: '¡Hola! 👋 Soy el asistente virtual de Victor Flores. ¿En qué puedo orientarte?',
+    bot: '¡Hola! 👋 Soy el asistente de la firma de Victor Flores. ¿En qué podemos orientarte hoy?',
     options: [
-      { label: '¿Qué tipo de asesoría ofrece?', next: 'asesoria' },
-      { label: '¿Cómo funciona una sesión?', next: 'sesion' },
-      { label: '¿Tiene algún costo la consulta inicial?', next: 'costo' },
-      { label: 'Quiero agendar una cita', next: 'agendar' }
+      { label: '¿En qué se especializan?', next: 'asesoria' },
+      { label: '¿Cómo funciona el proceso?', next: 'sesion' },
+      { label: '¿Tienen algún costo las sesiones?', next: 'costo' },
+      { label: 'Quiero agendar una sesión', next: 'agendar' }
     ]
   },
   asesoria: {
-    bot: 'Victor se especializa en consultoría patrimonial: blindaje de liquidez, capitalización a futuro y continuidad financiera. Todo diseñado a la medida de tus metas, sin productos genéricos.',
+    bot: 'Nos especializamos en arquitectura patrimonial: blindaje de liquidez, capitalización a futuro y continuidad financiera. Todo diseñado a la medida de tus metas, sin productos genéricos.',
     options: [
-      { label: '¿Con qué empresas trabaja?', next: 'respaldo' },
-      { label: 'Quiero agendar una cita', next: 'agendar' },
+      { label: '¿Qué respaldo tienen?', next: 'respaldo' },
+      { label: 'Quiero agendar una sesión', next: 'agendar' },
       { label: 'Volver al inicio', next: 'welcome' }
     ]
   },
   sesion: {
-    bot: 'La primera sesión es un diagnóstico integral: se analizan tus objetivos, tu flujo financiero y posibles vulnerabilidades. A partir de ahí, Victor diseña una arquitectura patrimonial personalizada.',
+    bot: 'Iniciamos con un diagnóstico integral donde evaluamos tus objetivos y flujo actual. A partir de ahí, diseñamos una estrategia patrimonial personalizada bajo la dirección de Victor.',
     options: [
-      { label: '¿Tiene algún costo?', next: 'costo' },
-      { label: 'Quiero agendar una cita', next: 'agendar' },
+      { label: '¿Tienen algún costo?', next: 'costo' },
+      { label: 'Quiero agendar una sesión', next: 'agendar' },
       { label: 'Volver al inicio', next: 'welcome' }
     ]
   },
   costo: {
-    bot: 'La sesión de diagnóstico inicial es sin costo y sin compromiso. Es una conversación para entender tu situación y ver si hay oportunidades de mejora.',
+    bot: 'Ninguna de nuestras sesiones de consultoría tiene costo ni compromiso. El objetivo es analizar tu situación y determinar si podemos aportarte valor estratégico.',
     options: [
       { label: 'Perfecto, quiero agendar', next: 'agendar' },
       { label: 'Tengo otra pregunta', next: 'welcome' }
     ]
   },
   respaldo: {
-    bot: 'Victor trabaja como consultor patrimonial a través de Vigvita Patrimonial, con el respaldo de MetLife, líder global con más de 150 años de trayectoria en protección financiera.',
+    bot: 'Operamos a través de Vigvita Patrimonial, una de las firmas consultoras más prestigiosas del país, y contamos con el solido respaldo de MetLife, líder global con más de 150 años de trayectoria.',
     options: [
-      { label: '¿Cómo funciona una sesión?', next: 'sesion' },
-      { label: 'Quiero agendar una cita', next: 'agendar' },
+      { label: '¿Cómo funciona el proceso?', next: 'sesion' },
+      { label: 'Quiero agendar una sesión', next: 'agendar' },
       { label: 'Volver al inicio', next: 'welcome' }
     ]
   },
   agendar: {
-    bot: '¡Excelente! Para coordinar una sesión con Victor, el canal más directo es WhatsApp. Te conectará en minutos.',
+    bot: '¡Excelente! Para coordinar tu sesión de diagnóstico, el canal más directo es WhatsApp. Te enlazaremos en minutos.',
     options: [
       { label: 'Abrir WhatsApp', next: 'whatsapp' },
       { label: 'Tengo otra pregunta', next: 'welcome' }
@@ -56,6 +56,7 @@ export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [currentNode, setCurrentNode] = useState('welcome');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
   const whatsappNumber = "525524321189";
@@ -70,7 +71,7 @@ export default function ChatWidget() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const handleOption = (option) => {
     if (option.next === 'whatsapp') {
@@ -80,11 +81,23 @@ export default function ChatWidget() {
 
     const node = faqTree[option.next];
     setCurrentNode(option.next);
+    
+    // Add user message, remove old options
     setMessages(prev => [
-      ...prev.map(m => ({ ...m, options: null })), // Remove old options
-      { type: 'user', text: option.label },
-      { type: 'bot', text: node.bot, options: node.options }
+      ...prev.map(m => ({ ...m, options: null })),
+      { type: 'user', text: option.label }
     ]);
+    
+    setIsTyping(true);
+    
+    // Simulate thinking delay
+    setTimeout(() => {
+      setMessages(prev => [
+        ...prev,
+        { type: 'bot', text: node.bot, options: node.options }
+      ]);
+      setIsTyping(false);
+    }, 1200);
   };
 
   return (
@@ -242,6 +255,33 @@ export default function ChatWidget() {
                   )}
                 </div>
               ))}
+              
+              {/* Typing Indicator */}
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{
+                    maxWidth: '90%',
+                    padding: '0.85rem 1rem',
+                    borderRadius: '1rem 1rem 1rem 0.25rem',
+                    background: 'rgba(255,255,255,0.06)',
+                    width: 'fit-content'
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: '4px', padding: '0.2rem 0' }}>
+                    {[0, 1, 2].map(i => (
+                      <motion.div
+                        key={i}
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                        style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-muted)' }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               <div ref={messagesEndRef} />
             </div>
           </motion.div>
